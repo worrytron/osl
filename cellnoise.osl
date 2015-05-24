@@ -1,0 +1,11 @@
+#include <stdosl.h>
+
+shader cellnoise(
+	float Saturation = 0.5,
+	float Value = 1.0,
+	vector Vector = P,
+	output color result = 0.0)
+{
+	float Fac = (noise("cell", Vector));
+	result = color("hsv", (smoothstep(0, 1, Fac)), Saturation, Value);
+}

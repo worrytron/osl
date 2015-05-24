@@ -1,0 +1,36 @@
+normal getBumpedNormal(color centerColor, color uColor, color vColor, float amount)
+{
+    vector avg = vector(0.333333);
+    float c = dot(avg, vector(centerColor));
+    float ddu = c - dot(avg, vector(uColor));
+    float ddv = c - dot(avg, vector(vColor));
+    return normalize(normal("shader", ddu, ddv, (1.000000 / amount)));
+}
+  
+surface
+carbon
+    [[ string description = "Carbon fiber material" ]]
+(
+    string diffuseTexture = "diffuse.png",
+    string specularTexture = "spec.png",
+    string anisoTexture = "aniso.png",
+    string bumpTexture = "bump.png",
+    float diffuseWeight = 0.5,
+    float specularWeight = 0.2,
+    float specularGlossiness = 0.75,
+    float bumpAmount = 2.0
+)
+{
+    color diffuseColor = texture(diffuseTexture, u, v);
+    color specularColor = texture(specularTexture, u, v);
+  
+    color anisoColor = texture(anisoTexture, u, v);
+    float anisotropy = 0.5 - anisoColor[0] * 4.0;
+  
+    color center = texture(bumpTexture, u, v);
+    color uColor = texture(bumpTexture, u + 0.004, v);
+    color vColor = texture(bumpTexture, u, v + 0.004);
+    normal n = getBumpedNormal(center, uColor, vColor, bumpAmount);
+  
+    Ci = diffuseWeight * diffuseColor * diffuse(n) + specularWeight * specularColor * ward(n, dPdu, specularGlossiness, specularGlossiness, "anisotropy", anisotropy);
+}

@@ -1,0 +1,8 @@
+surface diffuse_material
+(
+  color diffuse_color = color(0.2, 0.45, 0.9),
+  color transparency_color = color(0.0, 0.0, 0.0)
+)
+{
+  Ci = (1.0 - transparency_color) * diffuse_color * diffuse(N) + transparency_color * transparent();
+}

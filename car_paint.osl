@@ -1,0 +1,31 @@
+surface
+car_paint
+    [[ string description = "Car paint material" ]]
+(
+    color baseColor1 = color(0.08, 0.08, 0.77),
+    color baseColor2 = color(0.46, 0.46, 0.82),
+    color specularColor = color(0.87, 0.87, 1.0),
+    float diffuseWeight = 0.6,
+    float specularWeight = 0.3,
+    float specularGlossiness = 0.5,
+    float reflectionWeight = 0.4,
+    float baseFalloffAmount = 0.4,
+    float flakeSpread = 0.6
+)
+{
+    float cosNI = dot(N, -I);
+    float baseBlendFactor = pow(cosNI, 1.0 / baseFalloffAmount);
+    color diffuseColor = mix(baseColor1, baseColor2, baseBlendFactor);
+    color reflectionColor = color(reflectionWeight * (1.0 - cosNI));
+  
+    normal n = random() * 2.0 - 1.0;
+    float cosFlake = dot(n, -I);
+    if(cosFlake < 0.0) {
+        cosFlake = -cosFlake;
+        n = -n;
+    }
+  
+    n = normalize(N + flakeSpread * n);
+  
+    Ci = diffuseWeight * diffuseColor * diffuse(N) + specularWeight * specularColor * vray_blinn(n, specularGlossiness, 0.0, 0.0) + reflectionColor * reflection(N);
+}
